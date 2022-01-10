@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -7,6 +8,7 @@ import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import TextField from '@mui/material/TextField';
 import app from '../realmApp';
+import {ObjectId} from 'bson';
 
 const style = {
   position: 'absolute',
@@ -20,8 +22,8 @@ const style = {
   p: 4,
 };
 
-export default function AddDeposit(){
-  const [amount, setAmount] = useState();
+export default function AddDeposit({getDeposits}){
+  const [amount, setAmount] = useState(0.0);
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -30,9 +32,10 @@ export default function AddDeposit(){
   const handleDeposit = async (e) => {
     e.preventDefault();
     console.log(amount);
-    const res = await app.currentUser.functions.addDeposit(amount, app.currentUser.customData.groupId);
+    const res = await app.currentUser.functions.addDeposit(parseFloat(amount), app.currentUser.customData.groupId);
     console.log(res);
     handleClose();
+    getDeposits();
   }
 
   return (
@@ -70,4 +73,8 @@ export default function AddDeposit(){
       </Modal>
     </div>
   )
+}
+
+AddDeposit.propTypes = {
+  getDeposits: PropTypes.func.isRequired
 }

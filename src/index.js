@@ -15,7 +15,6 @@ import app, { APP_ID } from './realmApp';
 
 async function getValidAccessToken() {
   // Guarantee that there's a logged in user with a valid access token
-  console.log(app.currentUser);
   if (!app.currentUser) {
     // If no user is logged in, log in an anonymous user. The logged in user will have a valid
     // access token.

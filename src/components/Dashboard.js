@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import app from '../realmApp';
 import { ObjectId } from 'bson';
 import AddDeposit from './AddDeposit';
+import CreateJoinGroup from './CreateJoinGroup';
+import AppDrawer from './Drawer';
 import AppBar from '@mui/material/AppBar';
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
@@ -22,7 +24,7 @@ const columns = [
   {
     field: 'name',
     headerName: 'Name',
-    width: 150,
+    width: 180,
   },
   {
     field: 'amount',
@@ -33,36 +35,50 @@ const columns = [
   {
     field: 'date',
     headerName: 'Deposit Date',
+    width: 180,
+  },
+  {
+    field: 'status',
+    headerName: 'Status',
     width: 160,
   },
 ];
 
 export default function Dashboard({ logout }){
-  const [group, setGroup] = useState("");
-  const [groupId, setGroupId] = useState();
+  const [groupAmount, setGroupAmount] = useState(0);
+  const [balance, setBalance] = useState(0);
   const [rows, setRows] = useState([]);
+  const [group, setGroup] = useState("");
+  const [open, setOpen] = useState(false);
 
   useEffect(()=>{
-    //test();
     setGroup(app.currentUser.customData.groupId);
-    console.log(app.currentUser.customData)
-  }, [group])
+    getDeposits();
+  }, []);
 
-  const createGroup = async () => {
-    const res = await app.currentUser.functions.createGroup(groupId);
-    console.log(res);
-    await app.currentUser.refreshCustomData();
-    setGroup(app.currentUser.customData.groupId);
-  }
-
-  const joinGroup = async () => {
-    const res = await app.currentUser.functions.joinGroup(groupId);
-    console.log(res);
+  const getDeposits = async () => {
+    let db = app.currentUser.mongoClient("mongodb-atlas").db("reactVillage");
+    let depositsQuery = db.collection("Deposits");
+    let deps = await depositsQuery.find({group: app.currentUser.customData.groupId});
+    let allDeposits = [];
+    let gBalance = 0;
+    let mBalance = 0;
+    deps.forEach((deposit) => {
+      allDeposits.push({name: deposit.name, amount: deposit.amount, date: deposit.date, id: deposit._id.toString(), status: deposit.status})
+      gBalance = gBalance + deposit.amount;
+      if(deposit.user === app.currentUser.id){
+        mBalance = mBalance + deposit.amount;
+      }
+    });
+    setRows([]);
+    setRows(allDeposits);
+    setGroupAmount(gBalance);
+    setBalance(mBalance);
   }
 
   return (
     <div>
-      <Box sx={{ flexGrow: 1 }}>
+      <Box sx={{ flexGrow: 1, mb:2 }}>
         <AppBar position="static">
           <Toolbar>
             <IconButton
@@ -71,6 +87,7 @@ export default function Dashboard({ logout }){
               color="inherit"
               aria-label="menu"
               sx={{ mr: 2 }}
+              onClick={()=>setOpen(!open)}
             >
               <MenuIcon />
             </IconButton>
@@ -81,22 +98,12 @@ export default function Dashboard({ logout }){
           </Toolbar>
         </AppBar>
       </Box>
-      {group.length<=0? (
-        <div>
-          <h4>No group</h4>
-          <label>
-            <p>Group name</p>
-            <input type="text" onChange={e => setGroupId(e.target.value)}/>
-          </label>
-          <button onClick={createGroup}>Create Group</button>
-          <label>
-            <p>Group name</p>
-            <input type="text" onChange={e => setGroupId(e.target.value)}/>
-          </label>
-          <button onClick={joinGroup}>Join Group</button>
-        </div>
-      ): 
+      <AppDrawer open={open} setOpen={setOpen}/>
       <Container maxWidth="md">
+      {group.length<=0? (
+        <CreateJoinGroup setGroup={setGroup}/>
+      ): 
+      <>
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <Card sx={{ minWidth: 275 }}>
@@ -105,7 +112,7 @@ export default function Dashboard({ logout }){
                   Your Balance
                 </Typography>
                 <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                  K 
+                  K {balance} 
                 </Typography>
               </CardContent>
             </Card>
@@ -117,7 +124,7 @@ export default function Dashboard({ logout }){
                   Group Balance
                 </Typography>
                 <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                  K 
+                  K {groupAmount} 
                 </Typography>
               </CardContent>
             </Card>
@@ -130,16 +137,16 @@ export default function Dashboard({ logout }){
                   columns={columns}
                   pageSize={5}
                   rowsPerPageOptions={[5]}
-                  checkboxSelection
                   disableSelectionOnClick
                 />
               </div>
             </div>
           </Grid>
         </Grid>
-        <AddDeposit />
-      </Container>
+        <AddDeposit getDeposits={getDeposits}/>
+      </>
       }
+      </Container>
     </div>
   );
 }
