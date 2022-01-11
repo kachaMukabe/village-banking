@@ -4,6 +4,7 @@ import * as Realm from 'realm-web';
 import app from '../realmApp';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -19,10 +20,12 @@ export default function Login({setUser}){
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [signUp, setSignUp] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("start");
+    setLoading(true);
     const credentials = Realm.Credentials.emailPassword(email, password);
     try{
       const user = await app.logIn(credentials);
@@ -37,6 +40,7 @@ export default function Login({setUser}){
   const handleSignUp = async (e) => {
     e.preventDefault();
     console.log("Signing up");
+    setLoading(true);
     try{
       await app.emailPasswordAuth.registerUser({ email, password })
       const credentials = Realm.Credentials.emailPassword(email, password);
@@ -94,25 +98,31 @@ export default function Login({setUser}){
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
             />
-            {signUp?(
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign Up 
-            </Button>
-            ):(
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign In
-            </Button>
-            )}
+            {loading? (
+            <LoadingButton loading fullWidth variant="contained">
+              Submit
+            </LoadingButton>
+            ): 
+            signUp?(
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Sign Up 
+              </Button>
+              ):(
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Sign In
+              </Button>
+            )
+            }
             <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">

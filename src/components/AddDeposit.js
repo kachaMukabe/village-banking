@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Modal from '@mui/material/Modal';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
@@ -23,6 +24,7 @@ const style = {
 export default function AddDeposit({getDeposits}){
   const [amount, setAmount] = useState(0.0);
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -30,6 +32,7 @@ export default function AddDeposit({getDeposits}){
   const handleDeposit = async (e) => {
     e.preventDefault();
     console.log(amount);
+    setLoading(true);
     const res = await app.currentUser.functions.addDeposit(parseFloat(amount), app.currentUser.customData.groupId);
     console.log(res);
     handleClose();
@@ -59,6 +62,11 @@ export default function AddDeposit({getDeposits}){
               autoFocus
               onChange={e => setAmount(e.target.value)}
             />
+            {loading? (
+            <LoadingButton loading fullWidth variant="contained">
+              Submit
+            </LoadingButton>
+            ):(
             <Button
               type="submit"
               fullWidth
@@ -66,6 +74,7 @@ export default function AddDeposit({getDeposits}){
             >
               Deposit
             </Button>
+            )}
           </Box>
         </Box>
       </Modal>
