@@ -14,7 +14,6 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 export default function Login({setUser}){
   const [email, setEmail] = useState("");
@@ -66,7 +65,7 @@ export default function Login({setUser}){
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            {signUp? "Sign Up": "Sign In"}
           </Typography>
           <Box component="form" onSubmit={signUp? handleSignUp:handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
