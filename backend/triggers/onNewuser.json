@@ -1,0 +1,19 @@
+{
+    "name": "onNewuser",
+    "type": "AUTHENTICATION",
+    "config": {
+        "operation_type": "CREATE",
+        "providers": [
+            "local-userpass",
+            "oauth2-facebook"
+        ]
+    },
+    "disabled": false,
+    "event_processors": {
+        "FUNCTION": {
+            "config": {
+                "function_name": "createNewUserDoc"
+            }
+        }
+    }
+}

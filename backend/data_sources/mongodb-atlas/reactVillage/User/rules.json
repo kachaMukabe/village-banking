@@ -1,0 +1,32 @@
+{
+    "collection": "User",
+    "database": "reactVillage",
+    "roles": [
+        {
+            "name": "default",
+            "apply_when": {
+                "_id": "%%user.id"
+            },
+            "fields": {
+                "groupId": {}
+            },
+            "write": true,
+            "insert": true,
+            "delete": true,
+            "search": true,
+            "additional_fields": {}
+        },
+        {
+            "name": "non owner",
+            "apply_when": {},
+            "fields": {
+                "groupId": {}
+            },
+            "read": true,
+            "insert": false,
+            "delete": false,
+            "search": true,
+            "additional_fields": {}
+        }
+    ]
+}

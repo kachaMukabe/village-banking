@@ -1,0 +1,20 @@
+{
+    "properties": {
+        "_id": {
+            "bsonType": "objectId"
+        },
+        "groupId": {
+            "bsonType": "string"
+        },
+        "name": {
+            "bsonType": "string"
+        },
+        "nationalId": {
+            "bsonType": "string"
+        },
+        "phoneNumber": {
+            "bsonType": "string"
+        }
+    },
+    "title": "User"
+}

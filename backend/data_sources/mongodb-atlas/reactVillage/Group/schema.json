@@ -1,0 +1,14 @@
+{
+    "properties": {
+        "_id": {
+            "bsonType": "objectId"
+        },
+        "name": {
+            "bsonType": "string"
+        },
+        "treasurer": {
+            "bsonType": "string"
+        }
+    },
+    "title": "Group"
+}
